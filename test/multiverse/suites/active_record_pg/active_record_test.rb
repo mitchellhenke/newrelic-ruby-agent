@@ -494,6 +494,7 @@ class ActiveRecordInstrumentationTest < Minitest::Test
     end
 
     assert_activerecord_metrics(Order, 'find', :call_count => 1)
+    assert_activerecord_metrics(Order, 'find cached', :call_count => 2)
   end
 
   def test_cached_calls_are_not_recorded_with_select_all
@@ -515,7 +516,8 @@ class ActiveRecordInstrumentationTest < Minitest::Test
     end
 
     assert_metrics_recorded(
-      {"Datastore/operation/#{current_product}/select" => {:call_count => 1}}
+      {"Datastore/operation/#{current_product}/select" => {:call_count => 1}},
+      {"Datastore/operation/#{current_product}/select cached" => {:call_count => 2}}
     )
   end
 

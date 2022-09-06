@@ -45,7 +45,6 @@ module NewRelic
         end
 
         def start(name, id, payload) # THREAD_LOCAL_ACCESS
-          return if cached?(payload)
           return unless NewRelic::Agent.tl_is_execution_traced?
 
           config = active_record_config(payload)
@@ -56,7 +55,6 @@ module NewRelic
         end
 
         def finish(name, id, payload) # THREAD_LOCAL_ACCESS
-          return if cached?(payload)
           return unless state.is_execution_traced?
 
           if segment = pop_segment(id)
@@ -111,6 +109,10 @@ module NewRelic
             sql,
             config && config[:adapter]
           )
+
+          if cached?(payload)
+            operation = "cached #{operation}"
+          end
 
           host = nil
           port_path_or_id = nil
